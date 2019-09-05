@@ -1,13 +1,13 @@
 
 const express = require('express');
-const bodyParser = require('body-parser');
+const bodyparser = require('body-parser');
 const moment = require('moment');
 const fs=require('fs');
 const app = express();
 const todos = ['going', 'swimming', 'eating'];
 
 app.use(bodyparser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyparser.urlencoded({ extended: true }));
 
 
 app.listen(3000, function () {
@@ -46,7 +46,7 @@ app.post('/todo', (req, res) => {
 
 });
 
-add.delete('/todo/:todo', (req, res) => {
+app.delete('/todo/:todo', (req, res) => {
     let { todo } = req.params;
     todos = todos.filter((x) => x !== todo);
 
@@ -57,7 +57,7 @@ add.delete('/todo/:todo', (req, res) => {
 
 app.get('/future/:hours', (req, res) => {
     let hour = Number(req.params.hours);
-    res.send('new hour= ' + moment().add(hour, 'hours').format('LT'));
+    res.send('new hour = ' + moment().add(hour, 'hours').format('LT'));
 });
 
 //4th question
