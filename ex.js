@@ -2,13 +2,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const moment = require('moment');
+const fs=require('fs');
 const app = express();
+const todos = ['going', 'swimming', 'eating'];
 
+app.use(bodyparser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.listen(3000, function () {
-    console.log('Server is running with port 3000');
+    console.log('Server is running...');
 });
 
 //1st QUESTION
@@ -31,41 +34,24 @@ app.get('/calculator/:id1/:id2/:id3', function (req, res) {
 
 //2nd question
 
-
-var todolist = ['HTML', 'CSS', 'JS'];
+app.get('/todo', (req, res) => {
+    res.send(todos);
+});
 
 app.post('/todo', (req, res) => {
 
-    var addListItem = req.body.addListItem1;
-    todolist.push(addListItem);
-    res.send('new todo= ' + addListItem);
-});
-
-app.get('/todo', function (req, res) {
-    res.sendfile(__dirname + '/index.html');
-});
-
-app.get('/todos', (req, res) => {
-
-    for (let index = 0; index < todolist.length; ++index) {
-        res.write((index + 1) + '. item=' + todolist[index] + '\n');
-    }
-    res.end();
-});
-
-app.delete('/todos/:todo', (req, res) => {
-
-    for (let index = 0; index < todolist.length; ++index) {
-
-        if (req.params.todo === todolist[index]);
-        {
-            todolist.splice(todolist[index], 1);
-        }
-    }
-    res.send('item deleted= ' + req.params.todo);
+    console.log(req.body);
+    todos.push(req.body.todo);
+    res.send(todos);
 
 });
 
+add.delete('/todo/:todo', (req, res) => {
+    let { todo } = req.params;
+    todos = todos.filter((x) => x !== todo);
+
+    res.send(todos);
+});
 //3RD QUESTION
 ///future/hours route(GET) that adds given hours to the current datetime and returns result.
 
@@ -79,19 +65,35 @@ app.get('/future/:hours', (req, res) => {
 //or not and will respond with appropriate status code.
 
 app.post('/login', (req, res) => {
-
-    let username = req.body.username;
-    let password = req.body.password;
-
+    let { username, password } = req.body;
     if (username === 'admin' && password === 'password')
-        res.status(202, { msg: 'accepted' });
+        res.send('success');
     else
-        res.status(401, { msg: 'bad' });
+        res.sendStatus(401);
 
-});
-
-app.get('/login', (req, res) => {
-    res.sendfile(__dirname + '/login.html');
 });
 
 //5th question
+///report route(POST) that gets the example data below and creates a json file based on
+// that report in the reports folder. The json file will have the name of customer.
+// Example data:
+// {
+//     "customer": "X Company",
+//         "budget": "$200",
+//             "submitDate: "22 - 10 - 2019"
+// }
+
+app.post('/report', (req, res) => {
+
+    let { customer } = req.body;
+
+    if (fs.existsSync('./report')) 
+        fs.mkdirSync('./report');
+    
+    fs.writeFileSync(`./report/${customer}.json`, JSON.stringify(req.body));
+    res.send('saved');
+
+});
+
+
+
